@@ -3,11 +3,11 @@
 # Common Tags
 #--------------------------------------------------
 
-locals{
+locals {
   common_tags = {
-    Project = var.project_name
+    Project     = var.project_name
     Environment = var.environment
-    ManagedBy = "Terraform"
+    ManagedBy   = "Terraform"
   }
 }
 
@@ -20,12 +20,13 @@ resource "aws_kms_key" "customer_documents_encryption_key" {
   enable_key_rotation     = true
   deletion_window_in_days = 30
 
-  lifecycle{
+  lifecycle {
     prevent_destroy = true
   }
 
   tags = merge(local.common_tags, {
     Name = "${var.project_name}-bucket-kms-key"
+  })
 }
 
 # --------------------------------------------------
@@ -35,13 +36,13 @@ resource "aws_kms_key" "customer_documents_encryption_key" {
 resource "aws_s3_bucket" "customer_documents_bucket" {
   bucket        = var.bucket_name
   force_destroy = false
-  
+
   lifecycle {
     prevent_destroy = true
   }
   tags = merge(local.common_tags, {
     Name = "${var.project_name}-bucket"
-  }
+  })
 }
 
 # --------------------------------------------------
