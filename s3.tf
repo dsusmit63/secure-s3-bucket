@@ -1,16 +1,31 @@
 
+#--------------------------------------------------
+# Common Tags
+#--------------------------------------------------
+
+locals{
+  common_tags = {
+    Project = var.project_name
+    Environment = var.environment
+    ManagedBy = "Terraform"
+  }
+}
+
 # --------------------------------------------------
 # 1. AWS KMS Key
 # --------------------------------------------------
 
 resource "aws_kms_key" "customer_documents_encryption_key" {
-  description             = "KMS key for encrypting customer documents"
+  description             = "Customer managed KMS key for encrypting customer documents"
   enable_key_rotation     = true
   deletion_window_in_days = 30
 
-  tags = {
-    Name = "${var.project_name}-kms-key"
+  lifecycle{
+    prevent_destroy = true
   }
+
+  tags = merge(local.common_tags, {
+    Name = "${var.project_name}-bucket-kms-key"
 }
 
 # --------------------------------------------------
@@ -20,8 +35,11 @@ resource "aws_kms_key" "customer_documents_encryption_key" {
 resource "aws_s3_bucket" "customer_documents_bucket" {
   bucket        = var.bucket_name
   force_destroy = false
-
-  tags = {
+  
+  lifecycle {
+    prevent_destroy = true
+  }
+  tags = merge(local.common_tags, {
     Name = "${var.project_name}-bucket"
   }
 }
