@@ -32,4 +32,19 @@ terraform fmt -recursive
 terraform validate
 terraform plan
 terraform apply -auto-approve
+terraform output
+```
+### Connect to your Instance using your private key
+```bash
+ssh -i my-ec2-key.pem ubuntu@<EC2_PUBLIC_IP>
+```
+### Verify IAM Role
+```bash
+aws sts get-caller-identity
+```
+This shows the assumed IAM role identity.
+
+### Verify S3 access
+```bash
+aws s3 ls s3://my-secure-customer-documents-unique-12345
 ```
