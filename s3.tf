@@ -21,7 +21,7 @@ resource "aws_kms_key" "customer_documents_encryption_key" {
   deletion_window_in_days = 30
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 
   tags = merge(local.common_tags, {
@@ -38,7 +38,7 @@ resource "aws_s3_bucket" "customer_documents_bucket" {
   force_destroy = false
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
   tags = merge(local.common_tags, {
     Name = "${var.project_name}-bucket"
