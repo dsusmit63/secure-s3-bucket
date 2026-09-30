@@ -4,7 +4,7 @@
 # ----------------------------------------
 
 aws_region   = "us-east-1"
-project_name = "secure-s3-bucket-customer-documents"
+project_name = "secure-s3-bucket"
 environment  = "dev"
 
 # ----------------------------------------
@@ -18,4 +18,9 @@ bucket_name = "my-secure-customer-documents-unique-12345"
 # ----------------------------------------
 
 key_pair_name = "my-ec2-key"
-my_ip         = "49.37.9.215"
+
+# ---------------------------------------
+# Email Configuration
+# ---------------------------------------
+
+notification_email = "dsusmit63@gmail.com"
