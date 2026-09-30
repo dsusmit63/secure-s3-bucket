@@ -61,6 +61,7 @@ variable "key_pair_name" {
 variable "notification_email" {
   description = "Email address for CloudWatch alarm notifications"
   type        = string
+  default     = "dsusmit63@gmail.com"
 }
 
 
