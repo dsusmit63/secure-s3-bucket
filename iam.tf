@@ -42,11 +42,31 @@ resource "aws_iam_policy" "iam_policy" {
 
     Statement = [
       {
+        Sid    = "ListAllMyBuckets"
+        Effect = "Allow"
+
+        Action = [
+          "s3:ListAllMyBuckets"
+        ]
+
+        Resource = "*"
+      },
+      {
         Sid    = "AllowBucketListing"
         Effect = "Allow"
 
         Action = [
           "s3:ListBucket"
+        ]
+
+        Resource = aws_s3_bucket.customer_documents_bucket.arn
+      },
+      {
+        Sid    = "AllowGetBucketLocation"
+        Effect = "Allow"
+
+        Action = [
+          "s3:GetBucketLocation"
         ]
 
         Resource = aws_s3_bucket.customer_documents_bucket.arn
@@ -58,6 +78,26 @@ resource "aws_iam_policy" "iam_policy" {
         Action = [
           "s3:GetObject",
           "s3:PutObject"
+        ]
+
+        Resource = "${aws_s3_bucket.customer_documents_bucket.arn}/*"
+      },
+      {
+        Sid    = "AllowDeleteObject"
+        Effect = "Allow"
+
+        Action = [
+          "s3:DeleteObject"
+        ]
+
+        Resource = "${aws_s3_bucket.customer_documents_bucket.arn}/*"
+      },
+      {
+        Sid    = "AllowGetObjectVersioning"
+        Effect = "Allow"
+
+        Action = [
+          "s3:GetObjectVersion"
         ]
 
         Resource = "${aws_s3_bucket.customer_documents_bucket.arn}/*"
