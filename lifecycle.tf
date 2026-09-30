@@ -1,4 +1,8 @@
-resource "aws_s3_bucket_lifecycle_configuration" "customer_documents_lifecycle" {
+
+# --------------------------------------
+# S3 Bucket Lifecycle Configuration
+# --------------------------------------
+resource "aws_s3_bucket_lifecycle_configuration" "s3_lifecycle" {
   bucket = aws_s3_bucket.customer_documents_bucket.id
 
   rule {
