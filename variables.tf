@@ -12,7 +12,7 @@ variable "aws_region" {
 variable "project_name" {
   description = "Name of the project"
   type        = string
-  default     = "secure-s3-bucket-customer-documents"
+  default     = "secure-s3-bucket"
 }
 
 variable "environment" {
@@ -54,7 +54,13 @@ variable "key_pair_name" {
   type        = string
 }
 
-variable "my_ip" {
-  description = "Your public IP without CIDR suffix"
+# ----------------------------------------
+# Email Variable
+# ----------------------------------------
+
+variable "notification_email" {
+  description = "Email address for CloudWatch alarm notifications"
   type        = string
 }
+
+
