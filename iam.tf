@@ -37,85 +37,9 @@ resource "aws_iam_policy" "iam_policy" {
   name        = "${var.project_name}-iam-policy"
   description = "Allow EC2 to access customer documents in S3 using KMS"
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-
-    Statement = [
-      {
-        Sid    = "ListAllMyBuckets"
-        Effect = "Allow"
-
-        Action = [
-          "s3:ListAllMyBuckets"
-        ]
-
-        Resource = "*"
-      },
-      {
-        Sid    = "AllowBucketListing"
-        Effect = "Allow"
-
-        Action = [
-          "s3:ListBucket"
-        ]
-
-        Resource = aws_s3_bucket.customer_documents_bucket.arn
-      },
-      {
-        Sid    = "AllowGetBucketLocation"
-        Effect = "Allow"
-
-        Action = [
-          "s3:GetBucketLocation"
-        ]
-
-        Resource = aws_s3_bucket.customer_documents_bucket.arn
-      },
-      {
-        Sid    = "AllowObjectReadWrite"
-        Effect = "Allow"
-
-        Action = [
-          "s3:GetObject",
-          "s3:PutObject"
-        ]
-
-        Resource = "${aws_s3_bucket.customer_documents_bucket.arn}/*"
-      },
-      {
-        Sid    = "AllowDeleteObject"
-        Effect = "Allow"
-
-        Action = [
-          "s3:DeleteObject"
-        ]
-
-        Resource = "${aws_s3_bucket.customer_documents_bucket.arn}/*"
-      },
-      {
-        Sid    = "AllowGetObjectVersioning"
-        Effect = "Allow"
-
-        Action = [
-          "s3:GetObjectVersion"
-        ]
-
-        Resource = "${aws_s3_bucket.customer_documents_bucket.arn}/*"
-      },
-      {
-        Sid    = "AllowKMSForS3"
-        Effect = "Allow"
-
-        Action = [
-          "kms:Encrypt",
-          "kms:Decrypt",
-          "kms:GenerateDataKey",
-          "kms:DescribeKey"
-        ]
-
-        Resource = aws_kms_key.customer_documents_encryption_key.arn
-      }
-    ]
+  policy = templatefile("${path.module}/policy.json", {
+    bucket_arn  = aws_s3_bucket.customer_documents_bucket.arn
+    kms_key_arn = aws_kms_key.customer_documents_encryption_key.arn
   })
 
   tags = {
