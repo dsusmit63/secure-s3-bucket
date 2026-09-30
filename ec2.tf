@@ -1,3 +1,4 @@
+
 # ----------------------------------------
 # Ubuntu 24.04 LTS AMI
 # ----------------------------------------
@@ -81,9 +82,9 @@ data "aws_subnet" "selected_public_subnet" {
 # EC2 Security Group
 # ----------------------------------------
 
-resource "aws_security_group" "customer_documents_ec2_sg" {
-  name        = "${var.project_name}-ec2-sg"
-  description = "Security group for private customer documents EC2"
+resource "aws_security_group" "ec2_sg" {
+  name        = "my-ec2-sg"
+  description = "Security group for public EC2"
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
@@ -91,9 +92,16 @@ resource "aws_security_group" "customer_documents_ec2_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${var.my_ip}/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
+  egress {
+    description = "Allow HTTP outbound"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   egress {
     description = "Allow HTTPS outbound"
     from_port   = 443
@@ -102,8 +110,9 @@ resource "aws_security_group" "customer_documents_ec2_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+
   tags = {
-    Name = "${var.project_name}-ec2-sg"
+    Name = "my-ec2-sg"
   }
 }
 
@@ -111,18 +120,18 @@ resource "aws_security_group" "customer_documents_ec2_sg" {
 # EC2 Instance
 # ----------------------------------------
 
-resource "aws_instance" "customer_documents_ec2" {
+resource "aws_instance" "my_ec2" {
   ami           = data.aws_ami.ubuntu.id
   instance_type = var.ec2_instance_type
 
   subnet_id                   = data.aws_subnet.selected_public_subnet.id
-  vpc_security_group_ids      = [aws_security_group.customer_documents_ec2_sg.id]
+  vpc_security_group_ids      = [aws_security_group.ec2_sg.id]
   associate_public_ip_address = true
 
   key_name = var.key_pair_name
 
-  # IAM instance profile for S3 and SSM access
-  iam_instance_profile = aws_iam_instance_profile.customer_documents_instance_profile.name
+  # IAM instance profile for S3 access
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
 
   # Require IMDSv2
   metadata_options {
@@ -141,7 +150,7 @@ resource "aws_instance" "customer_documents_ec2" {
   }
 
   # Enable detailed monitoring
-  monitoring = true
+  monitoring = false
 
   # Protect against accidental Terraform destruction
   lifecycle {
@@ -149,6 +158,6 @@ resource "aws_instance" "customer_documents_ec2" {
   }
 
   tags = {
-    Name = "${var.project_name}-ec2"
+    Name = "my-ec2"
   }
 }
