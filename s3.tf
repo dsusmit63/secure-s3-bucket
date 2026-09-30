@@ -25,7 +25,7 @@ resource "aws_kms_key" "customer_documents_encryption_key" {
   }
 
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-bucket-kms-key"
+    Name = "${var.project_name}-kms-key"
   })
 }
 
@@ -35,13 +35,13 @@ resource "aws_kms_key" "customer_documents_encryption_key" {
 
 resource "aws_s3_bucket" "customer_documents_bucket" {
   bucket        = var.bucket_name
-  force_destroy = false
+  force_destroy = true
 
   lifecycle {
     prevent_destroy = false
   }
   tags = merge(local.common_tags, {
-    Name = "${var.project_name}-bucket"
+    Name = var.bucket_name
   })
 }
 
@@ -49,7 +49,7 @@ resource "aws_s3_bucket" "customer_documents_bucket" {
 # 3. S3 Block Public Access
 # --------------------------------------------------
 
-resource "aws_s3_bucket_public_access_block" "customer_documents_public_access_block" {
+resource "aws_s3_bucket_public_access_block" "customer_documents_bucket_public_access_block" {
   bucket = aws_s3_bucket.customer_documents_bucket.id
 
   block_public_acls       = true
@@ -62,7 +62,7 @@ resource "aws_s3_bucket_public_access_block" "customer_documents_public_access_b
 # 4. S3 Object Ownership
 # --------------------------------------------------
 
-resource "aws_s3_bucket_ownership_controls" "customer_documents_ownership_controls" {
+resource "aws_s3_bucket_ownership_controls" "customer_documents_bucket_ownership_controls" {
   bucket = aws_s3_bucket.customer_documents_bucket.id
 
   rule {
@@ -74,7 +74,7 @@ resource "aws_s3_bucket_ownership_controls" "customer_documents_ownership_contro
 # 5. S3 Versioning
 # --------------------------------------------------
 
-resource "aws_s3_bucket_versioning" "customer_documents_versioning" {
+resource "aws_s3_bucket_versioning" "customer_documents_bucket_versioning" {
   bucket = aws_s3_bucket.customer_documents_bucket.id
 
   versioning_configuration {
@@ -86,7 +86,7 @@ resource "aws_s3_bucket_versioning" "customer_documents_versioning" {
 # 6. S3 Server-Side Encryption
 # --------------------------------------------------
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "customer_documents_encryption" {
+resource "aws_s3_bucket_server_side_encryption_configuration" "customer_documents_bucket_encryption" {
   bucket = aws_s3_bucket.customer_documents_bucket.id
 
   rule {
@@ -103,7 +103,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "customer_document
 # 7. S3 Bucket Policy - Enforce HTTPS
 # --------------------------------------------------
 
-resource "aws_s3_bucket_policy" "customer_documents_https_policy" {
+resource "aws_s3_bucket_policy" "customer_documents_bucket_https_policy" {
   bucket = aws_s3_bucket.customer_documents_bucket.id
 
   policy = jsonencode({
