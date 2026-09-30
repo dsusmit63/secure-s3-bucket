@@ -38,7 +38,15 @@ terraform output
 ```bash
 ssh -i my-ec2-key.pem ubuntu@<EC2_PUBLIC_IP>
 ```
+
+### Verify the Operating System
+```bash
+cat /etc/os-release
+```
+You should see Ubuntu 24.04 LTS details.
+
 ### Verify IAM Role
+On the EC2 instance, run:
 ```bash
 aws sts get-caller-identity
 ```
@@ -47,4 +55,25 @@ This shows the assumed IAM role identity.
 ### Verify S3 access
 ```bash
 aws s3 ls s3://my-secure-customer-documents-unique-12345
+```
+### Test File upload and download
+Create a test file:
+```bash
+echo "This is a test document for S3" > test.txt
+```
+Upload it:
+```bash
+aws s3 cp test.txt s3://my-secure-customer-documents-unique-12345/test.txt
+```
+Verify the uploaded object:
+```bash
+aws s3 ls s3://my-secure-customer-documents-unique-12345/
+```
+Download it: 
+```bash
+aws s3 cp s3://my-secure-customer-documents-unique-12345/test.txt downloaded.txt
+```
+Verify:
+```bash
+cat downloaded.txt
 ```
