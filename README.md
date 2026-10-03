@@ -52,7 +52,11 @@ aws sts get-caller-identity
 ```
 This shows the assumed IAM role identity.
 
-### Verify S3 access
+### List Buckets (Account Level)
+```bash
+aws s3 ls
+```
+### List Bucket Objects (Bucket Level)
 ```bash
 aws s3 ls s3://my-secure-customer-documents-unique-12345
 ```
@@ -76,4 +80,22 @@ aws s3 cp s3://my-secure-customer-documents-unique-12345/test.txt downloaded.txt
 Verify:
 ```bash
 cat downloaded.txt
+```
+
+### Check Versioning
+Check if versioning is enabled or not:
+```bash
+aws s3api get-bucket-versioning --bucket my-secure-customer-documents-unique-12345
+```
+After getting confirmed, modify the downloaded test.txt and reupload it. Then check:
+```bash
+aws s3api list-object-versions --bucket my-secure-customer-documents-unique-12345 --prefix test.txt
+```
+Cleanup the output: 
+```bash
+aws s3api list-object-versions --bucket my-secure-customer-documents-unique-12345 --prefix test.txt --query "Versions[].{Version:VersionId, LastModified:LastModified, Latest:IsLatest}" --output table
+```
+Download the older version to compare:
+```bash
+aws s3api get-object --bucket my-secure-customer-documents-unique-12345 --key test.txt --version-id "PASTE_OLD_VERSION_ID_HERE" test_v1.txt
 ```
