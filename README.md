@@ -115,6 +115,22 @@ aws s3 cp s3://my-secure-customer-documents-unique-12345/test.txt .
 ```
 S3 will return 404 Not Found error. To the outside world, the file is deleted.
 
+Now to make the file active again, you simply need to permanently delete the Delete Marker itself: 
+
+Find the version ID of the Delete Marker:
+```bash
+aws s3api list-object-versions \
+  --bucket my-secure-customer-documents-unique-12345 \
+  --prefix test.txt
+```
+
+Delete the Delete Marker:
+```bash
+aws s3api delete-object \
+  --bucket my-secure-customer-documents-unique-12345 \
+  --key test.txt \
+  --version-id <DELETE_MARKER_VERSION_ID>
+```
 List all hidden versions & markers:
 ```bash
 aws s3api list-object-versions --bucket my-secure-customer-documents-unique-12345 --prefix test.txt
@@ -127,10 +143,9 @@ aws s3api delete-object \
   --key test.txt \
   --version-id <YOUR_DATA_VERSION_ID>
 ```
-Remove the leftover marker (optional)
+Purge everything (all versions of a file) at once:
 ```bash
-aws s3api delete-object \
+aws s3api delete-objects \
   --bucket my-secure-customer-documents-unique-12345 \
-  --key test.txt \
-  --version-id <YOUR_DELETE_MARKER_VERSION_ID>
+  --delete "$(aws s3api list-object-versions --bucket my-secure-customer-documents-unique-12345 --prefix test.txt --output json | jq '{Objects: [.Versions[], .DeleteMarkers[]] | map({Key: .Key, VersionId: .VersionId})}')"
 ```
