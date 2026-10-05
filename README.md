@@ -82,11 +82,14 @@ Verify:
 cat downloaded.txt
 ```
 
-### Check Versioning
+### Verify Bucket Versioning
 Check if versioning is enabled or not:
 ```bash
 aws s3api get-bucket-versioning --bucket my-secure-customer-documents-unique-12345
 ```
+> What it verifies: S3 versioning is enabled, allowing previous object versions to be retained when an object is overwritten
+or deleted.
+
 After getting confirmed, modify the downloaded test.txt and reupload it. Then check:
 ```bash
 aws s3api list-object-versions --bucket my-secure-customer-documents-unique-12345 --prefix test.txt
@@ -149,3 +152,16 @@ aws s3api delete-objects \
   --bucket my-secure-customer-documents-unique-12345 \
   --delete "$(aws s3api list-object-versions --bucket my-secure-customer-documents-unique-12345 --prefix test.txt --output json | jq '{Objects: [.Versions[], .DeleteMarkers[]] | map({Key: .Key, VersionId: .VersionId})}')"
 ```
+
+### Verify KMS Encryption
+```bash
+aws s3api head-object \--bucket my-secure-customer-documents-unique-12345 \--key test.txt
+```
+Look for "ServerSideEncryption":"aws:kms", "SSEKMSKeyId":"arn:aws:kms:us-east-1:..." fields. It confirms whether the object in S3 is encrypted using your configured AWS KMS key.
+
+### Verify the Lifecycle Configuration
+```bash
+aws s3api get-bucket-lifecycle-configuration \--bucket my-secure-customer-documents-unique-12345
+```
+
+###
