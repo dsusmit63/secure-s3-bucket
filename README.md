@@ -101,8 +101,9 @@ aws s3api get-object --bucket my-secure-customer-documents-unique-12345 --key te
 ```
 
 ### Delete
-When you run standard delete command on a versioned bucket, AWS does not erase the file. Instead it adds a Delete Marker on top of it. Any normal request to read the file 
-acts like the file is gone.
+
+#### Soft Deletion: 
+When you run standard delete command on a versioned bucket, AWS does not erase the file. Instead it adds a Delete Marker on top of it. Any normal request to read the file acts like the file is gone.
 ```bash
 aws s3 rm s3://my-secure-customer-documents-unique-12345/test.txt
 or,
@@ -116,17 +117,16 @@ S3 will return 404 Not Found error. To the outside world, the file is deleted.
 
 List all hidden versions & markers:
 ```bash
-aws s3api list-object-versions --bucket my-secure-customer-documents-unique-12345 --prefix handson.txt
+aws s3api list-object-versions --bucket my-secure-customer-documents-unique-12345 --prefix test.txt
 ```
 
-Permanent Deletion:
+#### Permanent Deletion:
 ```bash
 aws s3api delete-object \
   --bucket my-secure-customer-documents-unique-12345 \
   --key test.txt \
   --version-id <YOUR_DATA_VERSION_ID>
 ```
-
 Remove the leftover marker (optional)
 ```bash
 aws s3api delete-object \
