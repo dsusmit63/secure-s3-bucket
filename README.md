@@ -1,8 +1,6 @@
 # Secure an S3 Bucket using Terraform
 **Objective -** Create a secure S3 bucket using terraform for storing sensitive customer documents.
-
 ## Testing S3 
-
 ### Install AWS CLI
 ```bash
 sudo apt update
@@ -11,31 +9,26 @@ sudo apt install unzip
 unzip awscliv2.zip
 sudo ./aws/install
 ```
-
 ### Install Terraform
 ```bash
 wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt update && sudo apt install terraform
 ```
-
 ### Create an IAM identity with permissions to create S3 buckets and KMS keys
 ```bash
 aws configure [Put your access key ID, secret access key ID of IAM identity]
 ```
-
 ### Verify your setup
 ```bash
 aws --version
 terraform --version
 aws sts get-caller-identity
 ```
-
 ### Clone the Repo
 ```bash
 git clone <REPO_URL>
 ```
-
 ### Run Terraform
 ```bash
 terraform init
@@ -45,33 +38,27 @@ terraform plan
 terraform apply -auto-approve
 terraform output
 ```
-
 ### Connect to your Instance using your private key
 ```bash
 ssh -i my-ec2-key.pem ubuntu@<EC2_PUBLIC_IP>
 ```
-
 ### Verify the Operating System
 ```bash
 cat /etc/os-release
 ```
-
 ### Verify IAM Role
 ```bash
 aws sts get-caller-identity
 ```
 This shows the assumed IAM role identity passed to the EC2 instance using Instance profile.
-
 ### List Buckets (Account Level)
 ```bash
 aws s3 ls
 ```
-
 ### List Bucket Objects (Bucket Level)
 ```bash
 aws s3 ls s3://my-secure-customer-documents-unique-12345
 ```
-
 ### Test File upload and download
 ```bash
 echo "This is a test document for S3" > test.txt  [Create a file]
@@ -88,7 +75,6 @@ aws s3api get-bucket-versioning --bucket my-secure-customer-documents-unique-123
 or deleted.
 
 After getting confirmed, modify the downloaded test.txt and reupload it. Then check:
-
 ### Test Bucket Versioning
 ```bash
 aws s3api list-object-versions --bucket my-secure-customer-documents-unique-12345 --prefix test.txt
@@ -97,7 +83,6 @@ aws s3api list-object-versions --bucket my-secure-customer-documents-unique-1234
 aws s3api get-object --bucket my-secure-customer-documents-unique-12345 --key test.txt --version-id "PASTE_OLD_VERSION_ID_HERE" test_v1.txt [Download specific version of object]
 ```
 ### Test Deletion
-
 #### Soft Deletion: 
 When you run standard delete command on a versioned bucket, AWS does not erase the file. Instead it adds a Delete Marker on top of it. Any normal request to read the file acts like the file is gone.
 ```bash
@@ -112,13 +97,11 @@ aws s3 cp s3://my-secure-customer-documents-unique-12345/test.txt .
 S3 will return 404 Not Found error. To the outside world, the file is deleted.
 
 Now to make the file active again, you simply need to permanently delete the Delete Marker itself, Find the version ID of the Delete Marker:
-
 ```bash
 aws s3api list-object-versions \
   --bucket my-secure-customer-documents-unique-12345 \
   --prefix test.txt
 ```
-
 Delete the Delete Marker:
 ```bash
 aws s3api delete-object \
@@ -126,12 +109,11 @@ aws s3api delete-object \
   --key test.txt \
   --version-id <DELETE_MARKER_VERSION_ID>
 ```
-List all hidden versions & markers:
+#### Permanent Deletion:
+List all versions & markers:
 ```bash
 aws s3api list-object-versions --bucket my-secure-customer-documents-unique-12345 --prefix test.txt
 ```
-
-#### Permanent Deletion:
 ```bash
 aws s3api delete-object \
   --bucket my-secure-customer-documents-unique-12345 \
@@ -144,24 +126,20 @@ aws s3api delete-objects \
   --bucket my-secure-customer-documents-unique-12345 \
   --delete "$(aws s3api list-object-versions --bucket my-secure-customer-documents-unique-12345 --prefix test.txt --output json | jq '{Objects: [.Versions[], .DeleteMarkers[]] | map({Key: .Key, VersionId: .VersionId})}')"
 ```
-
 ### Verify KMS Encryption
 ```bash
 aws s3api head-object \--bucket my-secure-customer-documents-unique-12345 \--key test.txt
 ```
 Look for "ServerSideEncryption":"aws:kms", "SSEKMSKeyId":"arn:aws:kms:us-east-1:..." fields. It confirms whether the object in S3 is encrypted using your configured AWS KMS key.
-
 ### Verify the Lifecycle Configuration
 ```bash
 aws s3api get-bucket-lifecycle-configuration \--bucket my-secure-customer-documents-unique-12345
 ```
-
 ### Verify S3 Block Public Access
 ```bash
 aws s3api get-public-access-block \--bucket my-secure-customer-documents-unique-12345
 ```
-What this verifies: All four S3 Block Public Access Block settings are enabled.
-
+It verifies all four S3 Block Public Access Block settings are enabled.
 ### Verify Bucket Ownership Control
 ```bash
 aws s3api get-bucket-ownership-controls \--bucket my-secure-customer-documents-unique-12345
