@@ -164,4 +164,14 @@ Look for "ServerSideEncryption":"aws:kms", "SSEKMSKeyId":"arn:aws:kms:us-east-1:
 aws s3api get-bucket-lifecycle-configuration \--bucket my-secure-customer-documents-unique-12345
 ```
 
-###
+### Verify S3 Block Public Access
+```bash
+aws s3api get-public-access-block \--bucket my-secure-customer-documents-unique-12345
+```
+What this verifies: All four S3 Block Public Access Block settings are enabled.
+
+### Verify Bucket Ownership Control
+```bash
+aws s3api get-bucket-ownership-controls \--bucket my-secure-customer-documents-unique-12345
+```
+This confirms that the bucket owner owns uploaded objects.
