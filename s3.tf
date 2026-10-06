@@ -110,6 +110,10 @@ resource "aws_s3_bucket_policy" "customer_documents_bucket_https_policy" {
     Version = "2012-10-17"
 
     Statement = [
+
+      # -------------------------------
+      # Enforce HTTPS
+      # -------------------------------
       {
         Sid       = "DenyInsecureTransport"
         Effect    = "Deny"
@@ -124,6 +128,42 @@ resource "aws_s3_bucket_policy" "customer_documents_bucket_https_policy" {
         Condition = {
           Bool = {
             "aws:SecureTransport" = "false"
+          }
+        }
+      },
+
+      # --------------------------------
+      # Require SSE-KMS
+      # --------------------------------
+      {
+        Sid       = "DenyUnencryptedObjectUploads"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:PutObject"
+
+        Resource = "${aws_s3_bucket.customer_documents_bucket.arn}/*"
+
+        Condition = {
+          StringNotEquals = {
+            "s3:x-amz-server-side-encryption" = "aws:kms"
+          }
+        }
+      },
+
+      # ---------------------------------
+      # Require Specific KMS Key
+      # ----------------------------------
+      {
+        Sid       = "DenyIncorrectKMSKey"
+        Effect    = "Deny"
+        Principal = "*"
+        Action    = "s3:PutObject"
+
+        Resource = "${aws_s3_bucket.customer_documents_bucket.arn}/*"
+
+        Condition = {
+          StringNotEquals = {
+            "s3:x-amz-server-side-encryption-aws-kms-key-id" = aws_kms_key.customer_documents_encryption_key.arn
           }
         }
       }
