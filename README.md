@@ -149,3 +149,7 @@ This confirms that the bucket owner owns uploaded objects.
 ```bash
 aws s3api get-bucket-policy --bucket my-secure-customer-documents-unique-12345
 ```
+### Check Bucket Region
+```bash
+aws s3api head-bucket --bucket my-secure-customer-documents-unique-12345
+```
