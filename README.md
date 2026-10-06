@@ -145,3 +145,7 @@ It verifies all four S3 Block Public Access Block settings are enabled.
 aws s3api get-bucket-ownership-controls \--bucket my-secure-customer-documents-unique-12345
 ```
 This confirms that the bucket owner owns uploaded objects.
+### Verify Bucket Policy
+```bash
+aws s3api get-bucket-policy --bucket my-secure-customer-documents-unique-12345
+```
