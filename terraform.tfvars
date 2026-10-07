@@ -24,3 +24,9 @@ key_pair_name = "my-ec2-key"
 # ---------------------------------------
 
 notification_email = "dsusmit63@gmail.com"
+
+# ---------------------------------------
+# Phone Configuration
+# ---------------------------------------
+
+notification_phone = "+919007066588"
