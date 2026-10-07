@@ -63,5 +63,13 @@ variable "notification_email" {
   type        = string
   default     = "dsusmit63@gmail.com"
 }
+# ---------------------------------------
+# Phone Variable
+# ---------------------------------------
 
+variable "notification_phone" {
+  description = "Phone Number for Cloudwatch alarm notifications"
+  type      = string
+  sensitive = true
+}
 
