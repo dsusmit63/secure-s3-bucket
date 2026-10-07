@@ -69,7 +69,7 @@ variable "notification_email" {
 
 variable "notification_phone" {
   description = "Phone Number for Cloudwatch alarm notifications"
-  type      = string
-  sensitive = true
+  type        = string
+  sensitive   = true
 }
 
