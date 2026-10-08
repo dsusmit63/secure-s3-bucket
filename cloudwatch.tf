@@ -78,10 +78,10 @@ resource "aws_cloudwatch_metric_alarm" "ec2_high_memory" {
   threshold   = 80
 
   dimensions = {
-    host = "ip-172-31-22-134"
+    InstanceId = aws_instance.my_ec2.id
   }
-  
-  treat_missing_data = "missing"  
+
+  treat_missing_data = "missing"
 
   alarm_actions = [
     aws_sns_topic.ec2_alerts.arn
@@ -106,13 +106,13 @@ resource "aws_cloudwatch_metric_alarm" "ec2_high_disk" {
   threshold   = 80
 
   dimensions = {
-    device = "nvme0n1p1"
-    fstype = "ext4"
-    host   = "ip-172-31-22-134"
-    path   = "/"
+    InstanceId = aws_instance.my_ec2.id
+    device     = "nvme0n1p1"
+    fstype     = "ext4"
+    path       = "/"
   }
-  
-  treat_missing_data = "missing"  
+
+  treat_missing_data = "missing"
 
   alarm_actions = [
     aws_sns_topic.ec2_alerts.arn
