@@ -47,6 +47,14 @@
         "kms:DescribeKey"
       ],
       "Resource": "${kms_key_arn}"
+    },
+    {
+      "Sid": "CloudWatchAgentMetrics",
+      "Effect": "Allow",
+      "Action": [
+        "cloudwatch:PutMetricData"
+      ],
+      "Resource": "*"
     }
   ]
 }
