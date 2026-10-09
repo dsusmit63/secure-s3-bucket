@@ -157,7 +157,7 @@ resource "aws_instance" "my_ec2" {
     prevent_destroy = false
   }
 
-  user_data = file("${path.module}/install-aws_cli.sh")
+  user_data = file("${path.module}/install-ec2.sh")
 
   tags = {
     Name = "my-ec2"
